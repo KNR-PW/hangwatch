@@ -7,7 +7,7 @@
 const char* ssid = "Telefon MI";
 const char* password = "Barcelona1";
 
-const char* serverAddress = "http://192.168.43.212:5000/get_gpio_state";
+const char* serverAddress = "http://192.168.43.212:5000/gpio_state";
 
 void setup(){
     Serial.begin(115200);
@@ -36,7 +36,7 @@ void loop() {
     HTTPClient http;
     http.begin(serverAddress);
     http.addHeader("Content-Type", "application/json");
-     int httpResponseCode = http.sendRequest("GET", payload);
+     int httpResponseCode = http.sendRequest("POst", payload);
     if(httpResponseCode > 0)
     {
         Serial.printf("HTTP Response code: %d\n",httpResponseCode );
