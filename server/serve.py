@@ -1,8 +1,9 @@
+import time 
 from flask import Flask, request, render_template, jsonify
 
 app = Flask(__name__, template_folder='template')
 gpio_state = {'gpioState': []}
-
+lastUpdate = time.time()
 @app.route('/gpio_state', methods=['POST'])
 def receive_data():
     try:
@@ -18,8 +19,9 @@ def receive_data():
 
 @app.route('/get_gpio_state', methods=['GET'])
 def get_gpio_state():
-    return jsonify(gpio_state)
-
+     if  time.time() - lastUpdate > 120:  
+        gpio_state['gpioState'] = 'offline'
+     return render_template("index.html",gpio_state=gpio_state)
 @app.route('/', methods=['GET'])
 def home():
     return render_template("index.html", gpio_state=gpio_state)
