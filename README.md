@@ -14,14 +14,19 @@ Całość działa w ten sposób , że osoba przebywająca w pomieszczeniu musi p
 Żeby całość działała prawidłowo należy powiesić model na ścianie lub na magnesie , podłączyć do prądu o napięciu 5V.
 ## Endpointy 
 
- 1.  **Endpoint  *"adres/gpio_state"***
-	  obsługuje żądanie typu POST i aktualizuje stan gpio. 				Po otrzymaniu  żądania , endpoint pobiera dane JSON z żądania  i aktualizuje  zmienną `"gpio_state" przechowująca stan pinów GPIO
+ 1.  **Endpoint  *"/gpio_state"***
 
- 2.  **endpoint *"/get_gpio_state "***:
- obsługuje żądanie typu GET i służy do pokazywania aktualnego stanu pinów gpio.Jeżeli od ostatniej aktualizacji stanów mineło więcej niż dwie minuty stan zostanie ustawiony na "offline". Nastepnię endpiont renderuje szablon "index.html" ze zmieniona nowym stanem GPIO . Wygląda to tak:
- *GPIO state: {'gpioState': 'offline'}*
- 
+Obsługuje żądanie typu POST i aktualizuje stan gpio. Po otrzymaniu żądania, endpoint pobiera dane JSON z żądania i aktualizuje zmienną "gpio_state" przechowująca stan pinów GPIO.
 
- 3. **Endpoint *" /"***
- Obsługuje żądanie typu GET i jest domyślną stroną "stroną internetową" . Pobiera i renderuje "index.html" z przekazaną informacją o stanie GPIO.
+ 3.  **Endpoint *"/get_gpio_state "***:
+    
+Obsługuje żądanie typu GET i służy do pokazywania aktualnego stanu pinów gpio. Jeżeli od ostatniej aktualizacji stanów mineło więcej niż dwie minuty stan zostanie ustawiony na "offline". Nastepnię endpiont renderuje szablon "index.html" ze zmieniona nowym stanem GPIO. Wygląda to tak: 
+
+ {  
+   "gpioState": "offline"  
+ }
+
+ 5. **Endpoint *" /"***
+    
+Obsługuje żądanie typu GET i jest domyślną stroną "stroną internetową" . Pobiera i renderuje "index.html" z przekazaną informacją o stanie GPIO. 
 
