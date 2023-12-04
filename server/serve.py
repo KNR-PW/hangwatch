@@ -3,15 +3,13 @@ from flask import Flask, request,  jsonify
 
 app = Flask(__name__, template_folder='template')
 
-
-state = {}
-
-
+state={}
 
 @app.route('/hooks', methods=['POST'])
 def receive_data():
-    lastUpdate = time.time()
     
+    lastUpdate = time.time()
+    global state
     try:
 
         content = request.get_json() 
@@ -36,6 +34,7 @@ def receive_data():
 
 @app.route('/hooks', methods=['GET'])
 def check_state():
+    global state
     for board_id, board_state in state.items():
         if (time.time() - board_state['time']) > 7200:
             board_state['state'] = 'offline'
