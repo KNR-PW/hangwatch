@@ -4,26 +4,30 @@ from flask import Flask, request,  jsonify
 app = Flask(__name__, template_folder='template')
 
 
-
-
 state = {}
+
+
 
 @app.route('/hooks', methods=['POST'])
 def receive_data():
     lastUpdate = time.time()
+    
     try:
 
         content = request.get_json() 
         if 'state' in content:
          received_state = content['state']
-         state['place'] = {} 
-         state['place']['state'] = received_state
-         state['place']=content['place']
-         state['state']=content['state']
-         state['time']=lastUpdate
+         board_id = content['board_id']
+         if board_id not in state:
+                state[board_id] = {}
+
+         
+         state[board_id]['state'] = received_state
+         state[board_id]['place'] = content['place']
+         state[board_id]['time'] = lastUpdate
         
-         print(f"place: {state['place']}, State: {state['state']}")
-    
+         print(f"Board ID: {board_id}, Place: {state[board_id]['place']}, State: {state[board_id]['state']}")
+        
         return jsonify({'success': True})
     except Exception as e:
         print(f"Error receiving state: {str(e)}")
@@ -32,10 +36,11 @@ def receive_data():
 
 @app.route('/hooks', methods=['GET'])
 def check_state():
-    if (time.time() - state['time']) > 7220:
-         state['state'] = 'offline'
-    elif (time.time() - state['time']) > 10:
-        state['state'] = 'empty'    
+    for board_id, board_state in state.items():
+        if (time.time() - board_state['time']) > 7200:
+            board_state['state'] = 'offline'
+        elif (time.time() - board_state['time']) > 10:
+            board_state['state'] = 'empty'    
     
     
     return jsonify(state)
