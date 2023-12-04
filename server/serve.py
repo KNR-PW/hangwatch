@@ -13,18 +13,18 @@ def receive_data():
     try:
 
         content = request.get_json() 
-        if 'state' in content:
-         received_state = content['state']
-         board_id = content['board_id']
-         if board_id not in state:
-                state[board_id] = {}
+        isinstance(content.get('state'), dict)
+        received_state = content['state']
+        board_id = content['board_id']
+        if board_id not in state:
+         state[board_id] = {}
 
          
-         state[board_id]['state'] = received_state
-         state[board_id]['place'] = content['place']
-         state[board_id]['time'] = lastUpdate
+        state[board_id]['state'] = received_state
+        state[board_id]['place'] = content['place']
+        state[board_id]['time'] = lastUpdate
         
-         print(f"Board ID: {board_id}, Place: {state[board_id]['place']}, State: {state[board_id]['state']}")
+        print(f"Board ID: {board_id}, Place: {state[board_id]['place']}, State: {state[board_id]['state']}")
         
         return jsonify({'success': True})
     except Exception as e:
