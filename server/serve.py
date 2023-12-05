@@ -13,7 +13,6 @@ def receive_data():
     try:
 
         content = request.get_json() 
-        isinstance(content.get('state'), dict)
         received_state = content['state']
         board_id = content['board_id']
         if board_id not in state:
