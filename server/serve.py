@@ -17,7 +17,7 @@ def receive_data():
         received_state = content['state']
         board_id = content['board_id']
         if board_id not in state:
-         state[board_id] = {}
+            state[board_id] = {}
 
          
         state[board_id]['state'] = received_state
