@@ -48,40 +48,13 @@ Możliwa jest również sytuacja kiedy pojawi się awaria. Wtedy na stronie poja
         }
 }
 ```
-## Działanie servera
-Działanie serwera krok po kroku wygląda tak :
- 1. Importuje moduły time ,flask,request oraz jsonify. Time zawiera funkcje związane z czasem, flask jest frameworkiem webowym ,request służy do do obsługi żądań HTTP a jsonify przekształca dane na serwerze do formatu JSON przez płytkę ESP.
- 2.  Inicjalizujemy  obiekt flask o nazwie app. 
- 3. Następnie tworzymy pusty słownik *'state'*.
- 4. Definiujemy endpoint  *'/hooks'* obsługujący metody typu POST.
- 5. Definiujemy funkcje *receive_date* obsługującej żądanie typu POST.
- 6. Przypisujemy zmiennej *'lastUpdate'* aktualny czas.
- 7. Przypisujemy zmiennej *'content'* treść żądania HTTP przekazaną w formacie Json.
- 8. Przypisujemy zmiennej *'board_id'* wartość klucza w treści żądania.
- 9. Przypisujmy wartość zmiennej *received_state* do klucza *'state'* w słowniku *state[board_id]*
-``` phyton
-	 {
-	    state[board_id]['state'] =received_state	 
-	 } 
-```
- 10. Przypisujemy wartość klucza *'place'* w treści żądania do klucza *'place'* w słowniku *state[board_id]*.
- ```phyton
-	{
-	   state[board_id]['state']=content['place']	 
-	} 
-```
- 11. Przypisuje wartość zmiennej *'lastUpdate'* do klucza 'time' w słowniku *state[board_id]*
- ```phyton
-	{
-	    state[board_id]['time']=lastUpdate 
-	} 
-```
- 12. Definiujemy endpoint *'/hooks'* obsługujący tylko metody GET.
- 13. Definiujemy funkcję *check_state(),* która będzie obsługiwać żądania GET na endpoint  *'/hooks'*.
- 14. Tworzymy pętle ,która będzie iterować po elementach słownika *'state'* przypisując wartości klucza do board_id i wartość do *board_state*.
- 15. Sprawdzamy czy czas od ostatniej aktualizacji stanu jest większy od 2 godzin. Jeżeli tak to ustawiamy stan haczyka na *'offline'.
- 16.  Sprawdzamy  czy czas od ostatniej aktualizacji stanu jest większy od 10 sekund. Jeżeli tak to ustawiamy stan haczyka na *'empty'*. 
- 17. Uruchamiamy aplikacje
+## Uruchomienie  servera
+
+ 1. Otwieramy edytor kodu , który może uruchomić nasz serwer np. może być to Visual Studio Code.
+ 2. Jeżeli nie mamy wgranego modułu Flask w visual studiu możemy pobrać go używając funkcji 
+ *"-pip3 install flask"*.
+ 3. Następnie wciskamy ikonkę strzałki w prawym górnym rogu ekranu i uruchamiamy nasz program
+
 
 
     
