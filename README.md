@@ -50,10 +50,10 @@ Możliwa jest również sytuacja kiedy pojawi się awaria. Wtedy na stronie poja
 ```
 ## Uruchomienie  servera
 
- 1. Otwieramy edytor kodu , który może uruchomić nasz serwer np. może być to Visual Studio Code.
- 2. Jeżeli nie mamy wgranego modułu Flask w visual studiu możemy pobrać go używając funkcji 
- *"-pip3 install flask"*.
- 3. Następnie wciskamy ikonkę strzałki w prawym górnym rogu ekranu i uruchamiamy nasz program
+ 1. Otwieramy terminal ,w którym możemy uruchomić nasz serwer np. może być to Visual Studio Code.
+ 2. Sprawdzamy czy nasz program posiada wymagane moduły i pakiety.Informacje o wymaganiach naszego serwera znajdziemy w pliku requirements.txt znajdującym się w repozytorium razem z kodem serwera.
+ 3. Jeżeli nie posiadamy jakiegoś pakietu lub modułu to go instalujemy. 
+ 4. Jeżeli używamy Visual Studio Code to wciskamy ikonkę strzałki w prawym górnym rogu ekranu i uruchamiamy nasz program.
 
 
 
