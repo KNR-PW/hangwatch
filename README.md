@@ -50,10 +50,18 @@ Możliwa jest również sytuacja kiedy pojawi się awaria. Wtedy na stronie poja
 ```
 ## Uruchomienie  servera
 
- 1. Otwieramy terminal ,w którym możemy uruchomić nasz serwer np. może być to Visual Studio Code.
- 2. Sprawdzamy czy nasz program posiada wymagane moduły i pakiety.Informacje o wymaganiach naszego serwera znajdziemy w pliku requirements.txt znajdującym się w repozytorium razem z kodem serwera.
- 3. Jeżeli nie posiadamy jakiegoś pakietu lub modułu to go instalujemy. 
- 4. Jeżeli używamy Visual Studio Code to wciskamy ikonkę strzałki w prawym górnym rogu ekranu i uruchamiamy nasz program.
+1. Odpalamy terminal , który może odpalić nasz serwer np. może być to Visual Studio Code.
+2. W terminalu wpisujemy
+ ```python 
+	  "pip install -r requirements.txt"
+ ```
+ Plik requirements.txt znajduje się w repozytorium . 		
+  
+3. Po czym wpisujemy w terminalu 
+ ```python 
+	  "python serve.py"
+```
+W ten sposób odpalimy nasz program.
 
 
 
