@@ -36,8 +36,8 @@ void loop() {
    
     if(przyciskState==LOW)
     {
-        digitalWrite(33,HIGH);
-        // Odczytaj stan GPIO
+        
+    // Odczytaj stan GPIO
         const char* miejsce="warsztat 027";
         DynamicJsonDocument jsonDoc(200);
         jsonDoc["place"] =miejsce ;
@@ -50,10 +50,10 @@ void loop() {
         http.begin(serverAddress);
         http.addHeader("Content-Type", "application/json");
         int httpResponseCode = http.sendRequest("POST", payload);
-        
+        Serial.print(httpResponseCode);
         if(httpResponseCode > 0)
         {
-           
+            digitalWrite(33,HIGH);
             Serial.printf("HTTP Response code: %d\n",httpResponseCode );
             String response = http.getString();
             Serial.print(miejsce);
@@ -61,18 +61,35 @@ void loop() {
             deserializeJson(jsonDoc, response);
             String success = jsonDoc["success"].as<String>();
             Serial.println(response);
+            delay(1000);
+            
         }
         else
         { 
+            
+            while (1) {
+                digitalWrite(33, HIGH);
+                delay(500);
+                digitalWrite(33, LOW);
+                delay(500);
+                przyciskState = digitalRead(25);
+
+                if( przyciskState==HIGH)
+                {
+                    break;
+                }
+                
+            }
+            
             Serial.printf("HTTP Request failed %s\n", http.errorToString(httpResponseCode).c_str()); 
         }
         http.end();
     }
     else
-   {
+    {
         digitalWrite(33,LOW);
-        delay(1000);
     }
+   
     
     if (millis() - previousTime >= interval) 
     {
