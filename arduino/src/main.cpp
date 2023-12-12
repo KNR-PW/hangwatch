@@ -3,7 +3,7 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #define LED  33
-
+#define BUTTON 25
 
 const char* ssid = "Telefon MI";
 const char* password = "Barcelona1";
@@ -27,12 +27,12 @@ void setup(){
         
     }
     pinMode(LED,OUTPUT);
-    pinMode(25,INPUT_PULLUP);
+    pinMode(BUTTON,INPUT_PULLUP);
 }
 void loop() {
     
     
-    int buttonState = digitalRead(25);
+    int buttonState = digitalRead(BUTTON);
    
     if(buttonState==LOW)
     {
@@ -67,22 +67,23 @@ void loop() {
         else
         { 
             
-            while (1) {
+            while (1) 
+            {
                 digitalWrite(LED, HIGH);
                 delay(500);
                 digitalWrite(LED, LOW);
                 delay(500);
-                buttonState = digitalRead(25);
+                buttonState = digitalRead(BUTTON);
                 httpResponseCode = http.sendRequest("POST", payload);
                 if( buttonState==HIGH || httpResponseCode>0 )
                 {
                     break;
                 }
             }
-                if (httpResponseCode>0)
-                {
-                    digitalWrite(LED,HIGH);
-                }
+            if (httpResponseCode>0)
+            {
+                digitalWrite(LED,HIGH);
+            }
                 
             
             
@@ -114,15 +115,17 @@ void loop() {
         http.addHeader("Content-Type", "application/json");
         int httpResponseCode = http.sendRequest("POST", payload);
         delay(1000);
-    if (httpResponseCode > 0) {
-        Serial.printf("HTTP Response code: %d", httpResponseCode);
-        String response = http.getString();
-        DynamicJsonDocument jsonDoc(200);
-        deserializeJson(jsonDoc, response);
-        String success = jsonDoc["success"].as<String>();
-        Serial.println(response);
-    }
-    else {
+        if (httpResponseCode > 0) 
+        {
+            Serial.printf("HTTP Response code: %d", httpResponseCode);
+            String response = http.getString();
+            DynamicJsonDocument jsonDoc(200);
+            deserializeJson(jsonDoc, response);
+            String success = jsonDoc["success"].as<String>();
+            Serial.println(response);
+        }
+    else 
+    {
         Serial.printf("HTTP Request failed %s", http.errorToString(httpResponseCode).c_str());
     }
     http.end();
