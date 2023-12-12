@@ -8,10 +8,10 @@
 const char* ssid = "Telefon MI";
 const char* password = "Barcelona1";
 
-const char* serverAddress = "http://192.168.43.212:5000/hooks";
+const char* SERVER_ADDRESS = "http://192.168.43.212:5000/hooks";
 unsigned long previousTime = 0; // Zmienna przechowująca poprzednią wartość millis()
-const unsigned long interval = 60 * 5*1000; // Czas w milisekundach (5 minut)
-const char* board_id = "1234";
+const unsigned long INTERVAL = 60 * 5*1000; // Czas w milisekundach (5 minut)
+const char* BOARD_ID = "1234";
 
 void setup(){
     Serial.begin(115200);
@@ -42,12 +42,12 @@ void loop() {
         DynamicJsonDocument jsonDoc(200);
         jsonDoc["place"] =miejsce ;
         jsonDoc["state"]="hanged";
-        jsonDoc["board_id"] = board_id;
+        jsonDoc["board_id"] = BOARD_ID;
         String payload;
         serializeJson(jsonDoc,payload);
         // Wyślij żądanie POST na serwer Flask
         HTTPClient http;
-        http.begin(serverAddress);
+        http.begin(SERVER_ADDRESS);
         http.addHeader("Content-Type", "application/json");
         int httpResponseCode = http.sendRequest("POST", payload);
         Serial.print(httpResponseCode);
@@ -97,7 +97,7 @@ void loop() {
     }
    
     
-    if (millis() - previousTime >= interval) 
+    if (millis() - previousTime >= INTERVAL) 
     {
         previousTime = millis();
 
@@ -106,12 +106,12 @@ void loop() {
         DynamicJsonDocument jsonDoc(200);
         jsonDoc["place"] = miejsce;
         jsonDoc["state"] = "check";
-        jsonDoc["board_id"] = board_id;
+        jsonDoc["board_id"] = BOARD_ID;
         String payload;
         serializeJson(jsonDoc, payload);
         // Wyślij żądanie POST na serwer Flask
         HTTPClient http;
-        http.begin(serverAddress);
+        http.begin(SERVER_ADDRESS);
         http.addHeader("Content-Type", "application/json");
         int httpResponseCode = http.sendRequest("POST", payload);
         delay(1000);
