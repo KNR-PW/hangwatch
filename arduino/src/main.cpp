@@ -12,7 +12,7 @@ const char* SERVER_ADDRESS = "http://192.168.43.212:5000/hooks";
 unsigned long previousTime = 0; // Zmienna przechowująca poprzednią wartość millis()
 const unsigned long INTERVAL = 60 * 5*1000; // Czas w milisekundach (5 minut)
 const char* BOARD_ID = "1234";
-
+const char* miejsce = "warsztat 027";
 void setup(){
     Serial.begin(115200);
     delay(1000);
@@ -29,6 +29,24 @@ void setup(){
     pinMode(LED,OUTPUT);
     pinMode(BUTTON,INPUT_PULLUP);
 }
+int send_status_request(const char* miejsce, const char* BOARD_ID) 
+{
+    DynamicJsonDocument jsonDoc(200);
+    jsonDoc["place"] = miejsce;
+    jsonDoc["state"] = "check";
+    jsonDoc["board_id"] = BOARD_ID;
+    String payload;
+    serializeJson(jsonDoc, payload);
+    // Wyślij żądanie POST na serwer Flask
+    HTTPClient http;
+    http.begin(SERVER_ADDRESS);
+    http.addHeader("Content-Type", "application/json");
+    int httpResponseCode = http.sendRequest("POST", payload);
+    http.end();
+    return httpResponseCode;
+}
+
+
 void loop() {
     
     
@@ -38,18 +56,9 @@ void loop() {
     {
         
     // Odczytaj stan GPIO
-        const char* miejsce="warsztat 027";
-        DynamicJsonDocument jsonDoc(200);
-        jsonDoc["place"] =miejsce ;
-        jsonDoc["state"]="hanged";
-        jsonDoc["board_id"] = BOARD_ID;
-        String payload;
-        serializeJson(jsonDoc,payload);
-        // Wyślij żądanie POST na serwer Flask
         HTTPClient http;
         http.begin(SERVER_ADDRESS);
-        http.addHeader("Content-Type", "application/json");
-        int httpResponseCode = http.sendRequest("POST", payload);
+        int httpResponseCode = send_status_request("warsztat 027", BOARD_ID);
         Serial.print(httpResponseCode);
         if(httpResponseCode > 0)
         {
@@ -74,7 +83,7 @@ void loop() {
                 digitalWrite(LED, LOW);
                 delay(500);
                 buttonState = digitalRead(BUTTON);
-                httpResponseCode = http.sendRequest("POST", payload);
+                httpResponseCode = send_status_request("warsztat 027", BOARD_ID);
                 if( buttonState==HIGH || httpResponseCode>0 )
                 {
                     break;
@@ -102,18 +111,9 @@ void loop() {
         previousTime = millis();
 
         // Wysyłaj informacje co 5 minut niezależnie od stanu przycisku
-        const char* miejsce = "warsztat 027";
-        DynamicJsonDocument jsonDoc(200);
-        jsonDoc["place"] = miejsce;
-        jsonDoc["state"] = "check";
-        jsonDoc["board_id"] = BOARD_ID;
-        String payload;
-        serializeJson(jsonDoc, payload);
-        // Wyślij żądanie POST na serwer Flask
         HTTPClient http;
         http.begin(SERVER_ADDRESS);
-        http.addHeader("Content-Type", "application/json");
-        int httpResponseCode = http.sendRequest("POST", payload);
+        int httpResponseCode = send_status_request("warsztat 027", BOARD_ID);
         delay(1000);
         if (httpResponseCode > 0) 
         {
