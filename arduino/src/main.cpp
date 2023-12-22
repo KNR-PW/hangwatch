@@ -12,7 +12,7 @@ const char* SERVER_ADDRESS = "http://192.168.43.212:5000/hooks";
 unsigned long previousTime = 0; // Zmienna przechowująca poprzednią wartość millis()
 const unsigned long INTERVAL = 60 * 5*1000; // Czas w milisekundach (5 minut)
 const char* BOARD_ID = "1234";
-const char* miejsce = "warsztat 027";
+const char* MIEJSCE = "warsztat 027";
 void setup(){
     Serial.begin(115200);
     delay(1000);
@@ -29,11 +29,11 @@ void setup(){
     pinMode(LED,OUTPUT);
     pinMode(BUTTON,INPUT_PULLUP);
 }
-int send_status_request(const char* miejsce, const char* BOARD_ID) 
+int send_status_request(const char* MIEJSCE, const char* BOARD_ID) 
 {
     DynamicJsonDocument jsonDoc(200);
-    jsonDoc["place"] = miejsce;
-    jsonDoc["state"] = "check";
+    jsonDoc["place"] =  MIEJSCE;
+    jsonDoc["state"] = "hanged";
     jsonDoc["board_id"] = BOARD_ID;
     String payload;
     serializeJson(jsonDoc, payload);
@@ -58,14 +58,14 @@ void loop() {
     // Odczytaj stan GPIO
         HTTPClient http;
         http.begin(SERVER_ADDRESS);
-        int httpResponseCode = send_status_request("warsztat 027", BOARD_ID);
+        int httpResponseCode = send_status_request(MIEJSCE, BOARD_ID);
         Serial.print(httpResponseCode);
         if(httpResponseCode > 0)
         {
             digitalWrite(LED,HIGH);
             Serial.printf("HTTP Response code: %d\n",httpResponseCode );
             String response = http.getString();
-            Serial.print(miejsce);
+            Serial.print(MIEJSCE);
             DynamicJsonDocument jsonDoc(200);
             deserializeJson(jsonDoc, response);
             String success = jsonDoc["success"].as<String>();
@@ -83,7 +83,7 @@ void loop() {
                 digitalWrite(LED, LOW);
                 delay(500);
                 buttonState = digitalRead(BUTTON);
-                httpResponseCode = send_status_request("warsztat 027", BOARD_ID);
+                httpResponseCode = send_status_request(MIEJSCE, BOARD_ID);
                 if( buttonState==HIGH || httpResponseCode>0 )
                 {
                     break;
@@ -113,7 +113,7 @@ void loop() {
         // Wysyłaj informacje co 5 minut niezależnie od stanu przycisku
         HTTPClient http;
         http.begin(SERVER_ADDRESS);
-        int httpResponseCode = send_status_request("warsztat 027", BOARD_ID);
+        int httpResponseCode = send_status_request(MIEJSCE, BOARD_ID);
         delay(1000);
         if (httpResponseCode > 0) 
         {
