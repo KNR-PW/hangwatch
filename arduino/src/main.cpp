@@ -29,11 +29,19 @@ void setup(){
     pinMode(LED,OUTPUT);
     pinMode(BUTTON,INPUT_PULLUP);
 }
-int send_status_request(const char* MIEJSCE, const char* BOARD_ID) 
+int send_status_request(int buttonState) 
 {
+    
     DynamicJsonDocument jsonDoc(200);
     jsonDoc["place"] =  MIEJSCE;
-    jsonDoc["state"] = "hanged";
+    if(buttonState==LOW)
+    {
+        jsonDoc["state"] = "hanged";
+    }
+    else
+    {
+        jsonDoc["state"]="empty";
+    }
     jsonDoc["board_id"] = BOARD_ID;
     String payload;
     serializeJson(jsonDoc, payload);
@@ -47,35 +55,39 @@ int send_status_request(const char* MIEJSCE, const char* BOARD_ID)
 }
 
 
-void loop() {
-    
-    
+void loop() 
+{   
     int buttonState = digitalRead(BUTTON);
-   
-    if(buttonState==LOW)
+    if(buttonState==LOW)   
+    {
+        digitalWrite(LED,HIGH);
+    }
+    else
+    {
+        digitalWrite(LED,LOW);
+    }
+    HTTPClient http;
+    http.begin(SERVER_ADDRESS);
+    int httpResponseCode = send_status_request(buttonState);
+    Serial.print(httpResponseCode);
+    if(httpResponseCode > 0)
     {
         
-    // Odczytaj stan GPIO
-        HTTPClient http;
-        http.begin(SERVER_ADDRESS);
-        int httpResponseCode = send_status_request(MIEJSCE, BOARD_ID);
-        Serial.print(httpResponseCode);
-        if(httpResponseCode > 0)
-        {
-            digitalWrite(LED,HIGH);
-            Serial.printf("HTTP Response code: %d\n",httpResponseCode );
-            String response = http.getString();
-            Serial.print(MIEJSCE);
-            DynamicJsonDocument jsonDoc(200);
-            deserializeJson(jsonDoc, response);
-            String success = jsonDoc["success"].as<String>();
-            Serial.println(response);
-            delay(1000);
+        Serial.printf("HTTP Response code: %d\n",httpResponseCode );
+        String response = http.getString();
+        Serial.print(MIEJSCE);
+        DynamicJsonDocument jsonDoc(200);
+        deserializeJson(jsonDoc, response);
+        String success = jsonDoc["success"].as<String>();
+        Serial.println(response);
+        delay(1000);
             
-        }
-        else
+    }
+    else
+    { 
+        int buttonState = digitalRead(BUTTON);
+        if(buttonState==LOW) 
         { 
-            
             while (1) 
             {
                 digitalWrite(LED, HIGH);
@@ -83,8 +95,8 @@ void loop() {
                 digitalWrite(LED, LOW);
                 delay(500);
                 buttonState = digitalRead(BUTTON);
-                httpResponseCode = send_status_request(MIEJSCE, BOARD_ID);
-                if( buttonState==HIGH || httpResponseCode>0 )
+                httpResponseCode = send_status_request(buttonState);
+                if(httpResponseCode>0 )
                 {
                     break;
                 }
@@ -93,18 +105,10 @@ void loop() {
             {
                 digitalWrite(LED,HIGH);
             }
-                
-            
-            
-            Serial.printf("HTTP Request failed %s\n", http.errorToString(httpResponseCode).c_str()); 
-        }
-        http.end();
+        }            
+        Serial.printf("HTTP Request failed %s\n", http.errorToString(httpResponseCode).c_str()); 
     }
-    else
-    {
-        digitalWrite(LED,LOW);
-    }
-   
+    http.end();
     
     if (millis() - previousTime >= INTERVAL) 
     {
@@ -113,7 +117,7 @@ void loop() {
         // Wysyłaj informacje co 5 minut niezależnie od stanu przycisku
         HTTPClient http;
         http.begin(SERVER_ADDRESS);
-        int httpResponseCode = send_status_request(MIEJSCE, BOARD_ID);
+        int httpResponseCode = send_status_request(buttonState);
         delay(1000);
         if (httpResponseCode > 0) 
         {
@@ -124,11 +128,12 @@ void loop() {
             String success = jsonDoc["success"].as<String>();
             Serial.println(response);
         }
+    }
     else 
     {
         Serial.printf("HTTP Request failed %s", http.errorToString(httpResponseCode).c_str());
     }
     http.end();
-    }
+    
     
 }
