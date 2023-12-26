@@ -9,11 +9,11 @@ const char* ssid = "Telefon MI";
 const char* password = "Barcelona1";
 
 const char* SERVER_ADDRESS = "http://192.168.43.212:5000/hooks";
-unsigned long previousTime = 0; // Zmienna przechowująca poprzednią wartość millis()
-const unsigned long INTERVAL = 60 * 5*1000; // Czas w milisekundach (5 minut)
+
 const char* BOARD_ID = "1234";
 const char* MIEJSCE = "warsztat 027";
-void setup(){
+void setup()
+{
     Serial.begin(115200);
     delay(1000);
 
@@ -37,10 +37,12 @@ int send_status_request(int buttonState)
     if(buttonState==LOW)
     {
         jsonDoc["state"] = "hanged";
+        delay(30000);
     }
     else
     {
         jsonDoc["state"]="empty";
+        delay(30000);
     }
     jsonDoc["board_id"] = BOARD_ID;
     String payload;
@@ -108,32 +110,6 @@ void loop()
         }            
         Serial.printf("HTTP Request failed %s\n", http.errorToString(httpResponseCode).c_str()); 
     }
-    http.end();
-    
-    if (millis() - previousTime >= INTERVAL) 
-    {
-        previousTime = millis();
-
-        // Wysyłaj informacje co 5 minut niezależnie od stanu przycisku
-        HTTPClient http;
-        http.begin(SERVER_ADDRESS);
-        int httpResponseCode = send_status_request(buttonState);
-        delay(1000);
-        if (httpResponseCode > 0) 
-        {
-            Serial.printf("HTTP Response code: %d", httpResponseCode);
-            String response = http.getString();
-            DynamicJsonDocument jsonDoc(200);
-            deserializeJson(jsonDoc, response);
-            String success = jsonDoc["success"].as<String>();
-            Serial.println(response);
-        }
-    }
-    else 
-    {
-        Serial.printf("HTTP Request failed %s", http.errorToString(httpResponseCode).c_str());
-    }
-    http.end();
-    
-    
+    http.end(); 
 }
+
