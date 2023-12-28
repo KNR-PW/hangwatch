@@ -37,12 +37,10 @@ int send_status_request(int buttonState)
     if(buttonState==LOW)
     {
         jsonDoc["state"] = "hanged";
-        delay(30000);
     }
     else
     {
         jsonDoc["state"]="empty";
-        delay(30000);
     }
     jsonDoc["board_id"] = BOARD_ID;
     String payload;
@@ -53,6 +51,7 @@ int send_status_request(int buttonState)
     http.addHeader("Content-Type", "application/json");
     int httpResponseCode = http.sendRequest("POST", payload);
     http.end();
+    delay(1000);
     return httpResponseCode;
 }
 
@@ -68,25 +67,9 @@ void loop()
     {
         digitalWrite(LED,LOW);
     }
-    HTTPClient http;
-    http.begin(SERVER_ADDRESS);
     int httpResponseCode = send_status_request(buttonState);
-    Serial.print(httpResponseCode);
-    if(httpResponseCode > 0)
+    if(httpResponseCode < 0)
     {
-        
-        Serial.printf("HTTP Response code: %d\n",httpResponseCode );
-        String response = http.getString();
-        Serial.print(MIEJSCE);
-        DynamicJsonDocument jsonDoc(200);
-        deserializeJson(jsonDoc, response);
-        String success = jsonDoc["success"].as<String>();
-        Serial.println(response);
-        delay(1000);
-            
-    }
-    else
-    { 
         int buttonState = digitalRead(BUTTON);
         if(buttonState==LOW) 
         { 
@@ -108,8 +91,6 @@ void loop()
                 digitalWrite(LED,HIGH);
             }
         }            
-        Serial.printf("HTTP Request failed %s\n", http.errorToString(httpResponseCode).c_str()); 
+       
     }
-    http.end(); 
 }
-
