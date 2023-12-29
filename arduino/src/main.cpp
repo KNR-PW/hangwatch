@@ -68,7 +68,7 @@ void loop()
         digitalWrite(LED,LOW);
     }
     int httpResponseCode = send_status_request(buttonState);
-    if(httpResponseCode < 0|| httpResponseCode==404)
+    if(httpResponseCode !=200)
     {
         int buttonState = digitalRead(BUTTON);
         if(buttonState==LOW) 
@@ -81,12 +81,12 @@ void loop()
                 delay(500);
                 buttonState = digitalRead(BUTTON);
                 httpResponseCode = send_status_request(buttonState);
-                if(httpResponseCode>0 && httpResponseCode!=404 )
+                if(httpResponseCode==200 )
                 {
                     break;
                 }
             }
-            if (httpResponseCode>0 && httpResponseCode!=404)
+            if (httpResponseCode==200)
             {
                 digitalWrite(LED,HIGH);
             }
