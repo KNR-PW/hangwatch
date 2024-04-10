@@ -5,10 +5,10 @@
 #define LED  33
 #define BUTTON 25
 
-const char* ssid = "Telefon MI";
-const char* password = "Barcelona1";
+const char* ssid = "Tu wpisać login do kołowego wifi";
+const char* password = "Tu wpisać hasło do kołowego wifi";
 
-const char* SERVER_ADDRESS = "http://192.168.43.212:5000/hooks";
+const char* SERVER_ADDRESS =  "https://hangwatch.knr.edu.pl/hooks";
 
 const char* BOARD_ID = "1234";
 const char* MIEJSCE = "warsztat 027";
