@@ -3,7 +3,7 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #define LED  33
-#define BUTTON 25
+#define BUTTON 14
 
 const char* ssid = "Tu wpisać login do kołowego wifi";
 const char* password = "Tu wpisać hasło do kołowego wifi";
