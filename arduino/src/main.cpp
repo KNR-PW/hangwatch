@@ -78,6 +78,7 @@ void loop()
     }
     
     if(button1.isPressed == true){
+        int status027 = get_status();
         tft.fillRect(0,20,128,40,TFT_BLACK);
         tft.drawBitmap(39,60,logo,50,53,TFT_BLACK,TFT_CYAN);
         httpResponseCode = send_status_request(button1.isPressed);
@@ -93,13 +94,13 @@ void loop()
         tft.setTextColor(TFT_WHITE,TFT_BLACK);
         tft.print("STATUS STUDENTA");
         tft.setCursor(10,20);
-        if(get_status()== 0 ){
+        if(status027== 0 ){
             tft.print("027 zamkniete");
         }
-        else if(get_status() == 1){
+        else if(status027 == 1){
             tft.print("027 otwarte");
         }
-        else if(get_status() == 2){
+        else if(status027 == 2){
             tft.print("027 offline");
         }
         tft.textsize = 2;
@@ -113,7 +114,7 @@ void loop()
        tft.fillRect(0,20,128,40,TFT_BLACK);
         tft.drawBitmap(39,60,logo,50,53,TFT_BLACK,TFT_CYAN);
         httpResponseCode = send_status_request(button1.isPressed);
-       
+        int status027 = get_status();
         while(httpResponseCode != 200){
         tft.fillRect(0,10,128,40,TFT_BLACK);
         tft.setCursor(100,10);
@@ -130,13 +131,13 @@ void loop()
         tft.setTextColor(TFT_WHITE,TFT_BLACK);
         tft.print("STATUS STUDENTA");
         tft.setCursor(10,20);
-        if(get_status()== 0 ){
+        if(status027 == 0 ){
             tft.print("027 zamkniete");
         }
-        else if(get_status() == 1){
+        else if(status027 == 1){
             tft.print("027 otwarte");
         }
-        else if(get_status() == 2){
+        else if(status027 == 2){
             tft.print("027 offline");
         }
         tft.textsize = 2;
@@ -231,8 +232,11 @@ void setupMode(){
 int get_status(){
     HTTPClient http;
     http.begin(SERVER_ADDRESS);
+    DynamicJsonDocument jsonDoc(200);
     int responseCode = http.GET();
     String payload = "{}" ;
+    jsonDoc["board_id"] = 1234;
+    serializeJson(jsonDoc, payload);
     if(responseCode > 0){
         payload = http.getString();
     }
