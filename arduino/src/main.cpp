@@ -2,41 +2,171 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#define LED  33
-#define BUTTON 25
+#include <SPI.h>
+#include <TFT_eSPI.h>
+#include <string>
+#include <bitmap.h>
+#include <WiFiManager.h>
 
-const char* ssid = "Telefon MI";
-const char* password = "Barcelona1";
 
-const char* SERVER_ADDRESS = "http://192.168.43.212:5000/hooks";
+TFT_eSPI tft = TFT_eSPI();
 
-const char* BOARD_ID = "1234";
-const char* MIEJSCE = "warsztat 027";
+const char* ssid_self = "HACZYK";
+const char* password_self = "haczykowanie";
+
+const char* SERVER_ADDRESS = "http://192.168.0.102:5000/hooks"; // może być zmieniany przez funkcje setup
+
+const char* BOARD_ID = "B201";
+const char* MIEJSCE = "boks b2.01";
+
+void IRAM_ATTR buttonAction_Falling();
+void IRAM_ATTR buttonAction_Rising();
+void IRAM_ATTR buttonAction_WebServer();
+int get_status();
+int send_status_request(bool buttonState);
+void loading();
+void setupMode();
+
+class Button{
+    public:
+        bool isPressed;
+        uint16_t Pin;
+        const char* states[2]={"Student","Piwo"};
+};
+
+Button button1;
+Button button2;
+Button buttonWeb;
+
+
 void setup()
 {
     Serial.begin(115200);
     delay(1000);
+    button1.Pin = 25; //przycisk do wykrywanai kluczyka
+    button2.Pin = 26; 
+    buttonWeb.Pin = 14; //przycisk do wchodzenia w tryb setupu
+    buttonWeb.isPressed = false; //tryb setupu musi byc wylaczony przy bootowaniu
+    button1.isPressed = false;
 
-    WiFi.mode(WIFI_STA); //Optional
-    WiFi.begin(ssid, password);
-    Serial.println("\nConnecting");
+    tft.init(); //wlaczenie wysweitalcza
+    tft.textsize=2;
+    tft.fillScreen(TFT_BLACK);
+    
+    pinMode(button1.Pin,INPUT_PULLUP);
+    attachInterrupt(button1.Pin,buttonAction_Falling,FALLING);
+    attachInterrupt(button2.Pin,buttonAction_Rising,RISING);
+    attachInterrupt(buttonWeb.Pin,buttonAction_WebServer,FALLING); 
+    
+    setupMode();
+  
+    
+   
+   
 
-    while(WiFi.status() != WL_CONNECTED){
-        Serial.print(".");
-        delay(100);
+}
+
+
+
+
+
+void loop() 
+{   
+    int httpResponseCode;
+    if(buttonWeb.isPressed == true){
+        setupMode();
+    }
+    
+    if(button1.isPressed == true){
+        tft.fillRect(0,20,128,40,TFT_BLACK);
+        tft.drawBitmap(39,60,logo,50,53,TFT_BLACK,TFT_CYAN);
+        httpResponseCode = send_status_request(button1.isPressed);
+        while(httpResponseCode != 200){
+        httpResponseCode = send_status_request(button1.isPressed);
+        
+        }
+        while(button1.isPressed==true){
+        tft.drawBitmap(39,60,logo,50,53,TFT_BLACK,TFT_WHITE);
+        
+        tft.setCursor(10,10);
+        tft.textsize = 1; 
+        tft.setTextColor(TFT_WHITE,TFT_BLACK);
+        tft.print("STATUS STUDENTA");
+        tft.setCursor(10,20);
+        if(get_status()== 0 ){
+            tft.print("027 zamkniete");
+        }
+        else if(get_status() == 1){
+            tft.print("027 otwarte");
+        }
+        else if(get_status() == 2){
+            tft.print("027 offline");
+        }
+        tft.textsize = 2;
+        tft.setCursor(10,40);
+        tft.setTextColor(TFT_RED,TFT_BLACK);
+        tft.print(button1.states[1]);
+        }
         
     }
-    pinMode(LED,OUTPUT);
-    pinMode(BUTTON,INPUT_PULLUP);
+    else{
+       tft.fillRect(0,20,128,40,TFT_BLACK);
+        tft.drawBitmap(39,60,logo,50,53,TFT_BLACK,TFT_CYAN);
+        httpResponseCode = send_status_request(button1.isPressed);
+       
+        while(httpResponseCode != 200){
+        tft.fillRect(0,10,128,40,TFT_BLACK);
+        tft.setCursor(100,10);
+        
+
+        httpResponseCode = send_status_request(button1.isPressed);
+        
+        }
+        while(button1.isPressed==false){
+        
+        tft.drawBitmap(39,60,logo,50,53,TFT_BLACK,TFT_WHITE);
+        tft.setCursor(10,10);
+        tft.textsize = 1; 
+        tft.setTextColor(TFT_WHITE,TFT_BLACK);
+        tft.print("STATUS STUDENTA");
+        tft.setCursor(10,20);
+        if(get_status()== 0 ){
+            tft.print("027 zamkniete");
+        }
+        else if(get_status() == 1){
+            tft.print("027 otwarte");
+        }
+        else if(get_status() == 2){
+            tft.print("027 offline");
+        }
+        tft.textsize = 2;
+        tft.setCursor(10,40);
+        tft.setTextColor(TFT_GREEN);
+        tft.print(button1.states[0]);
+        }
+       
+    }
+   
 }
-int send_status_request(int buttonState) 
+
+
+void IRAM_ATTR buttonAction_Falling(){
+ button1.isPressed = false; 
+}
+void IRAM_ATTR buttonAction_Rising(){
+ button1.isPressed = true;
+}
+void IRAM_ATTR buttonAction_WebServer(){
+buttonWeb.isPressed = !buttonWeb.isPressed;
+}
+int send_status_request(bool buttonState)
 {
     
     DynamicJsonDocument jsonDoc(200);
     jsonDoc["place"] =  MIEJSCE;
-    if(buttonState==LOW)
+    if(buttonState==false)
     {
-        jsonDoc["state"] = "hanged";
+        jsonDoc["state_"] = "hanged";
     }
     else
     {
@@ -51,47 +181,74 @@ int send_status_request(int buttonState)
     http.addHeader("Content-Type", "application/json");
     int httpResponseCode = http.sendRequest("POST", payload);
     http.end();
-    delay(1000);
+    loading();
     return httpResponseCode;
 }
-
-
-void loop() 
-{   
-    int buttonState = digitalRead(BUTTON);
-    if(buttonState==LOW)   
-    {
-        digitalWrite(LED,HIGH);
+void loading(){
+    int whiteRect_Y = 150;
+    int whiteRect_X = 0;
+    int whiteRect_Height = 4;
+    int whiteRect_Width = 128;
+    int rectSpace = 1;
+    int barWidth = 1;
+    int barHeight = 2;
+    tft.setTextColor(TFT_WHITE);
+    tft.drawRect(whiteRect_X,whiteRect_Y,whiteRect_Width,whiteRect_Height,TFT_WHITE);
+    for(int i = whiteRect_X + rectSpace; i<=whiteRect_Width-rectSpace;i++){
+        tft.fillRect(i,whiteRect_Y + rectSpace,barWidth,barHeight,TFT_GREEN);
+        delay(6);
     }
-    else
-    {
-        digitalWrite(LED,LOW);
-    }
-    int httpResponseCode = send_status_request(buttonState);
-    if(httpResponseCode !=200)
-    {
-        int buttonState = digitalRead(BUTTON);
-        if(buttonState==LOW) 
-        { 
-            while (1) 
-            {
-                digitalWrite(LED, HIGH);
-                delay(500);
-                digitalWrite(LED, LOW);
-                delay(500);
-                buttonState = digitalRead(BUTTON);
-                httpResponseCode = send_status_request(buttonState);
-                if(httpResponseCode==200 )
-                {
-                    break;
-                }
-            }
-            if (httpResponseCode==200)
-            {
-                digitalWrite(LED,HIGH);
-            }
-        }            
-       
-    }
+    tft.fillRect(whiteRect_X,whiteRect_Y,whiteRect_Width, whiteRect_Height,TFT_BLACK);
+    
 }
+void setupMode(){
+    tft.fillRect(0,10,158,90,TFT_BLACK);
+    tft.drawBitmap(39,60,logo,50,53,TFT_BLACK,TFT_LIGHTGREY);
+    tft.setCursor(10,10);
+    tft.textsize = 1; 
+    tft.setTextColor(TFT_WHITE,TFT_BLACK);
+    tft.print("TRYB SETUPU");
+    tft.setTextColor(TFT_CYAN,TFT_BLACK);
+    tft.setCursor(10,30);
+    tft.print(ssid_self);
+    tft.setCursor(10,40);
+    tft.print(password_self);
+
+    WiFiManager wm;
+    wm.setConfigPortalTimeout(300);
+    if(!wm.startConfigPortal(ssid_self,password_self)){
+        tft.fillRect(0,10,128,40,TFT_BLACK);
+        tft.setCursor(10,10);
+        tft.print("timeout");
+        delay(3000);
+        
+        
+    }
+    tft.fillRect(0,10,128,40,TFT_BLACK);
+    tft.textsize = 2;
+    buttonWeb.isPressed = false;
+}
+int get_status(){
+    HTTPClient http;
+    http.begin(SERVER_ADDRESS);
+    int responseCode = http.GET();
+    String payload = "{}" ;
+    if(responseCode > 0){
+        payload = http.getString();
+    }
+    http.end();
+    if(payload = "empty"){
+        return 0;
+    }
+    else if(payload = "hanged"){
+        return 1;
+    }
+    else{
+        return 2;
+    }
+    }
+
+
+
+
 
