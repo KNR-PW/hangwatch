@@ -52,5 +52,6 @@ def check_state():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Server for receiving state from boards')
     parser.add_argument('--port', type=int, default=5000, help='Port to run the server on')
+    parser.add_argument('--debug', action='store_true', help='Enable debug mode')
     args = parser.parse_args()
-    app.run(host="0.0.0.0", port=args.port, debug=True)
+    app.run(host="0.0.0.0", port=args.port, debug=args.debug)
