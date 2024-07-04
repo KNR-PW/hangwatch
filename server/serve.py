@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import sys
 import time
 
 from flask import Flask, request,  jsonify, make_response
@@ -80,7 +81,7 @@ def process_arguments():
                 print("Default rooms file found")
                 args.rooms = './rooms.json'
         except FileNotFoundError:
-            print("rooms file not found❗ Now every post request will be accepted without password.")
+            print("rooms file not found❗ Now every post request will be accepted without password.", file=sys.stderr)
     return args
 
 def load_rooms(filepath):
