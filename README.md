@@ -70,6 +70,15 @@ Możliwa jest również sytuacja kiedy pojawi się awaria. Wtedy na stronie poja
 "python3 serve.py"
 ```
 
+Dodatkowo w folderze `server` można umieścić plik `rooms.json` opisujący dopuszczalne ID-iki oraz ich hasła (`null` oznacza brak hasła). Np.:
+
+```json
+{
+  "027": null ,
+  "warsztat w piwnicy": "mocno tajne",
+}
+```
+
 ### Uruchomienie w dockerze
 
 ```bash
