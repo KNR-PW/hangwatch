@@ -93,3 +93,13 @@ if __name__ == '__main__':
     if args.rooms is not None:
         ROOMS = load_rooms(args.rooms) if args.rooms is not None else None
     app.run(host="0.0.0.0", port=args.port, debug=args.debug)
+else:
+    print("Running in production mode", file=sys.stderr)
+    if ROOMS is None:
+        try:
+            with open('./rooms.json') as f:
+                print("Default rooms file found")
+                ROOMS = load_rooms("./rooms.json")
+        except FileNotFoundError:
+            print("rooms file not found❗ Now every post request will be accepted without password.", file=sys.stderr)
+
