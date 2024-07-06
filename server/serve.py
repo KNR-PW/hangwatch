@@ -24,7 +24,17 @@ def check_password(board_id, password):
 
 @app.route('/hooks', methods=['POST'])
 def receive_data():
-    
+    """Updates the state of selected hook
+
+    Expected json format:
+    {
+        "board_id": "board_id",
+        "state": "state",
+        "place": "place",
+        "password": "password"
+    }
+    """
+
     lastUpdate = time.time()
     global state
     try:
@@ -61,7 +71,7 @@ def check_state():
     global state
     for board_id, board_state in state.items():
         if board_state.get('last_activity_time') is not None:
-            if (time.time() - board_state['last_activity_time']) > 7200:
+            if (time.time() - board_state['last_activity_time']) > 720:
                 board_state['state'] = 'offline'
                 board_state['state_change_time'] = time.time()
 
