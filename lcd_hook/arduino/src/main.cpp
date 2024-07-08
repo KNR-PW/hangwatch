@@ -7,6 +7,9 @@
 #include <string>
 #include <bitmap.h>
 #include <WiFiManager.h>
+#define BUTTON1_PIN 25
+#define BUTTON2_PIN 26
+#define BUTTON_WEB_PIN 14
 
 
 TFT_eSPI tft = TFT_eSPI();
@@ -18,7 +21,7 @@ const char* SERVER_ADDRESS = "https://hangwatch.knr.edu.pl/hooks";
 
 const char* BOARD_ID = "box";
 const char* MIEJSCE = "boks b2.01";
-const char* HASLO = "3fw548wb5797834fqvkahud";
+const char* HASLO = "tajne hasło";
 
 void IRAM_ATTR buttonAction_Falling();
 void IRAM_ATTR buttonAction_Rising();
@@ -60,17 +63,7 @@ void setup()
     attachInterrupt(buttonWeb.Pin,buttonAction_WebServer,FALLING); 
     
     setupMode();
-  
-    
-   
-   
-
 }
-
-
-
-
-
 void loop() 
 {   
     int httpResponseCode;
