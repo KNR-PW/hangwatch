@@ -2,6 +2,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+<<<<<<< HEAD:arduino/src/main.cpp
 #include <SPI.h>
 #include <TFT_eSPI.h>
 #include <string>
@@ -38,6 +39,15 @@ Button button1;
 Button button2;
 Button buttonWeb;
 
+=======
+#define LED  33
+#define BUTTON 14
+
+const char* ssid = "Tu wpisać login do kołowego wifi";
+const char* password = "Tu wpisać hasło do kołowego wifi";
+
+const char* SERVER_ADDRESS =  "https://hangwatch.knr.edu.pl/hooks";
+>>>>>>> 7d71c29a2035345501349c7e3c6bb327136e165f:basic_hook/arduino/src/main.cpp
 
 void setup()
 {
