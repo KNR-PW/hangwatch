@@ -47,9 +47,9 @@ void setup()
 {
     Serial.begin(115200);
     delay(1000);
-    button1.Pin = 25; //przycisk do wykrywanai kluczyka
-    button2.Pin = 26; 
-    buttonWeb.Pin = 14; //przycisk do wchodzenia w tryb setupu
+    button1.Pin = BUTTON1_PIN; //przycisk do wykrywanai kluczyka
+    button2.Pin = BUTTON2_PIN; 
+    buttonWeb.Pin = BUTTON_WEB_PIN; //przycisk do wchodzenia w tryb setupu
     buttonWeb.isPressed = false; //tryb setupu musi byc wylaczony przy bootowaniu
     button1.isPressed = false;
 
