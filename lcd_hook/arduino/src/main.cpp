@@ -21,7 +21,7 @@ const char* SERVER_ADDRESS = "https://hangwatch.knr.edu.pl/hooks";
 
 const char* BOARD_ID = "box";
 const char* MIEJSCE = "boks b2.01";
-const char* HASLO = "tajne hasło";
+const char* HASLO = "3fw548wb5797834fqvkahud";
 
 void IRAM_ATTR buttonAction_Falling();
 void IRAM_ATTR buttonAction_Rising();
@@ -47,15 +47,9 @@ void setup()
 {
     Serial.begin(115200);
     delay(1000);
-<<<<<<< HEAD
     button1.Pin = BUTTON1_PIN; //przycisk do wykrywanai kluczyka
     button2.Pin = BUTTON2_PIN; 
     buttonWeb.Pin = BUTTON_WEB_PIN; //przycisk do wchodzenia w tryb setupu
-=======
-    button1.Pin = BUTTON1_PIN;
-    button2.Pin = BUTTON2_PIN; 
-    buttonWeb.Pin = BUTTON_WEB_PIN;
->>>>>>> ea5cf03a5ec03bb295b1755e56b3de3a1a4dfd88
     buttonWeb.isPressed = false; //tryb setupu musi byc wylaczony przy bootowaniu
     button1.isPressed = false;
 
@@ -73,6 +67,7 @@ void setup()
 void loop() 
 {   
     int httpResponseCode;
+    uint64_t timeElapsed;
     if(buttonWeb.isPressed == true){
         setupMode();
     }
@@ -86,6 +81,7 @@ void loop()
         httpResponseCode = send_status_request(button1.isPressed);
         
         }
+        timeElapsed = millis();
         while(button1.isPressed==true){
         tft.drawBitmap(39,60,logo,50,53,TFT_BLACK,TFT_WHITE);
         
@@ -108,6 +104,10 @@ void loop()
         tft.setTextColor(TFT_RED,TFT_BLACK);
         tft.print(button1.states[1]);
         }
+        if(millis() - timeElapsed >= 700){
+        timeElapsed = millis();
+        httpResponseCode = send_status_request(button1.isPressed);
+        }
         
     }
     else{
@@ -123,6 +123,8 @@ void loop()
         httpResponseCode = send_status_request(button1.isPressed);
         
         }
+        
+        timeElapsed = millis();
         while(button1.isPressed==false){
         
         tft.drawBitmap(39,60,logo,50,53,TFT_BLACK,TFT_WHITE);
@@ -144,6 +146,10 @@ void loop()
         tft.setCursor(10,40);
         tft.setTextColor(TFT_GREEN);
         tft.print(button1.states[0]);
+        }
+        if(millis() - timeElapsed >= 700){
+        timeElapsed = millis();
+        httpResponseCode = send_status_request(button1.isPressed);
         }
        
     }
