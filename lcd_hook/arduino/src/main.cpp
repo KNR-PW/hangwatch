@@ -161,7 +161,7 @@ int send_status_request(bool buttonState)
     jsonDoc["place"] =  MIEJSCE;
     if(buttonState==false)
     {
-        jsonDoc["state_"] = "hanged";
+        jsonDoc["state"] = "hanged";
     }
     else
     {
