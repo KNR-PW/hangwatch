@@ -103,11 +103,12 @@ void loop()
         tft.setCursor(10,40);
         tft.setTextColor(TFT_RED,TFT_BLACK);
         tft.print(button1.states[1]);
-        }
-        if(millis() - timeElapsed >= 700){
+        if(millis() - timeElapsed >= 100000){
         timeElapsed = millis();
         httpResponseCode = send_status_request(button1.isPressed);
         }
+        }
+        
         
     }
     else{
@@ -146,11 +147,12 @@ void loop()
         tft.setCursor(10,40);
         tft.setTextColor(TFT_GREEN);
         tft.print(button1.states[0]);
-        }
-        if(millis() - timeElapsed >= 700){
+        if(millis() - timeElapsed >= 100000){
         timeElapsed = millis();
         httpResponseCode = send_status_request(button1.isPressed);
         }
+        }
+        
        
     }
    
@@ -223,7 +225,7 @@ void setupMode(){
     tft.print(password_self);
 
     WiFiManager wm;
-    wm.setConfigPortalTimeout(300);
+    wm.setConfigPortalTimeout(180);
     if(!wm.startConfigPortal(ssid_self,password_self)){
         tft.fillRect(0,10,128,40,TFT_BLACK);
         tft.setCursor(10,10);
