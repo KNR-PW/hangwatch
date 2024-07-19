@@ -21,7 +21,7 @@ const char* SERVER_ADDRESS = "https://hangwatch.knr.edu.pl/hooks";
 
 const char* BOARD_ID = "box";
 const char* MIEJSCE = "boks b2.01";
-const char* HASLO = "3fw548wb5797834fqvkahud";
+const char* HASLO = "tajne hasło";
 
 void IRAM_ATTR buttonAction_Falling();
 void IRAM_ATTR buttonAction_Rising();
