@@ -11,6 +11,11 @@ Istnieją 2 warianty haczyka.
 - Podstawowy składający się dwóch diod LED, magnesu, przycisku oraz ESP32.
 - Zaawansowany - zawierający dodakowo eyświetlacz LCD pokazujący status jego oraz pozostałych pomieszczeń koła
 
+| Podstawowy | Zaawansowany |
+|------------|--------------|
+| <img src="./images/haczyk_basic.png" width="350px"/> |<img src="./images/haczyk_lcd.jpg" width="350px"/>|
+
+
 ## Endpoint
 
 **Endpoint **`hooks`_\*\*  
